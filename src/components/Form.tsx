@@ -15,12 +15,14 @@ import {
 
 const API_GATEWAY_URL = 'https://4brve5hkh9.execute-api.us-east-1.amazonaws.com/stage6/resource';
 
+// @ts-ignore
 function getDataFromFile(file: File): Promise<string> {
   return new Promise<string> ((resolve, reject) => {
     const reader = new FileReader();
 
     reader.addEventListener("load", () => resolve(reader.result as string));
     reader.addEventListener("error", err => reject(err));
+		// @ts-ignore
     reader.readAsDataURL(file);
   });
 }
@@ -31,14 +33,16 @@ const Form = () => {
   const onSubmit = async (data: FormData) => {
     try {
       let fileData: string | undefined;
-			const file = data.get('file') as File;
+			// @ts-ignore
+			const file = data.file[0] as File;
 
 			if (file) {
 				fileData = await getDataFromFile(file);
 			}
 			const response = await fetch(API_GATEWAY_URL, {
 				method: 'POST',
-				body: JSON.stringify({ ...Object.fromEntries(data), file: fileData }),
+				// @ts-ignore
+				body: JSON.stringify({ ...data, file: fileData }),
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -79,6 +83,7 @@ const Form = () => {
         type="date"
         {...register('date')}
         fullWidth
+        InputLabelProps={{ shrink: true }}
       />
 
       <TextField
